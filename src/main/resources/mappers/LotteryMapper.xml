@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="top.huangsansui.lottery.dao.LotteryMapper" >
+  <resultMap id="BaseResultMap" type="top.huangsansui.lottery.model.Lottery" >
+    <id column="lottery_id" property="lotteryId" jdbcType="BIGINT" />
+    <result column="lottery_name" property="lotteryName" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="TINYINT" />
+    <result column="points" property="points" jdbcType="INTEGER" />
+    <result column="is_delete" property="isDelete" jdbcType="TINYINT" />
+    <result column="stock_num" property="stockNum" jdbcType="INTEGER" />
+    <result column="total_num" property="totalNum" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    lottery_id, lottery_name, type, points, is_delete, stock_num, total_num, create_time, 
+    update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from lottery
+    where lottery_id = #{lotteryId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from lottery
+    where lottery_id = #{lotteryId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="top.huangsansui.lottery.model.Lottery" useGeneratedKeys="true" keyProperty="lotteryId" >
+    insert into lottery (lottery_name, type, points, 
+      is_delete, stock_num, total_num, 
+      create_time, update_time)
+    values (#{lotteryName,jdbcType=VARCHAR}, #{type,jdbcType=TINYINT}, #{points,jdbcType=INTEGER}, 
+      #{isDelete,jdbcType=TINYINT}, #{stockNum,jdbcType=INTEGER}, #{totalNum,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="top.huangsansui.lottery.model.Lottery" useGeneratedKeys="true" keyProperty="lotteryId" >
+    insert into lottery
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="lotteryName != null" >
+        lottery_name,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="points != null" >
+        points,
+      </if>
+      <if test="isDelete != null" >
+        is_delete,
+      </if>
+      <if test="stockNum != null" >
+        stock_num,
+      </if>
+      <if test="totalNum != null" >
+        total_num,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="lotteryName != null" >
+        #{lotteryName,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=TINYINT},
+      </if>
+      <if test="points != null" >
+        #{points,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null" >
+        #{isDelete,jdbcType=TINYINT},
+      </if>
+      <if test="stockNum != null" >
+        #{stockNum,jdbcType=INTEGER},
+      </if>
+      <if test="totalNum != null" >
+        #{totalNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="top.huangsansui.lottery.model.Lottery" >
+    update lottery
+    <set >
+      <if test="lotteryName != null" >
+        lottery_name = #{lotteryName,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="points != null" >
+        points = #{points,jdbcType=INTEGER},
+      </if>
+      <if test="isDelete != null" >
+        is_delete = #{isDelete,jdbcType=TINYINT},
+      </if>
+      <if test="stockNum != null" >
+        stock_num = #{stockNum,jdbcType=INTEGER},
+      </if>
+      <if test="totalNum != null" >
+        total_num = #{totalNum,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where lottery_id = #{lotteryId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="top.huangsansui.lottery.model.Lottery" >
+    update lottery
+    set lottery_name = #{lotteryName,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      points = #{points,jdbcType=INTEGER},
+      is_delete = #{isDelete,jdbcType=TINYINT},
+      stock_num = #{stockNum,jdbcType=INTEGER},
+      total_num = #{totalNum,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where lottery_id = #{lotteryId,jdbcType=BIGINT}
+  </update>
+</mapper>
