@@ -119,4 +119,8 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where user_id = #{userId,jdbcType=BIGINT}
   </update>
+  <select id="findByUserId" resultMap="BaseResultMap">
+    select user_id, points, draw_num, money
+    from user where user_id = #{userId} and is_delete = 0
+  </select>
 </mapper>

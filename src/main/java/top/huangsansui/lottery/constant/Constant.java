@@ -12,5 +12,10 @@ public class Constant {
     /**
      * 中奖概率
      */
-    private static final int WIN_RATIO = 50;
+    public static final int WIN_RATIO = 50;
+
+    /**
+     * 抽奖用户记录
+     */
+    public static final String USER_LOTTERY = "user_lottery:";
 }

@@ -1,6 +1,6 @@
 package top.huangsansui.lottery.service;
 
-import top.huangsansui.lottery.dto.LotteryDTO;
+import top.huangsansui.lottery.constant.ResponseEntity;
 
 /**
  * Function:
@@ -16,5 +16,5 @@ public interface LotteryService {
      * @param userId
      * @return
      */
-    LotteryDTO lottery(long userId);
+    ResponseEntity lottery(long userId);
 }

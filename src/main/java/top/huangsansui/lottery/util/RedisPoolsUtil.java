@@ -140,11 +140,13 @@ public class RedisPoolsUtil {
      * @return
      */
     public static String buildKey(String key) {
-        return new StringBuilder().append(RUNTIME).append(":").append(key).toString();
+        return new StringBuilder().append(key).toString();
     }
 
     public static void close(Jedis jedis) {
-        if (jedis != null) jedis.close();
+        if (jedis != null) {
+            jedis.close();
+        }
     }
 
     public static void set(String key, String value) {
@@ -476,7 +478,7 @@ public class RedisPoolsUtil {
      * @return 1存在，0不存在
      */
     public static boolean hexists(String key, String fieid) {
-        //ShardedJedis sjedis = getShardedJedis();  
+        //ShardedJedis sjedis = getShardedJedis();
         Jedis sjedis = getJedis();
         boolean s = sjedis.hexists(key, fieid);
         close(sjedis);
@@ -656,7 +658,7 @@ public class RedisPoolsUtil {
             System.out.println(updateCounter("20180608m", 0));
 			*//*jedis = getInstance().getResource();
 			jedis.set("name", "riyunzhu");
-//			
+//
 //			jedis.setex("qyyd_verify_123",10*60,"123456");
 //			System.out.println(jedis.get("name"));
 //			System.out.println(jedis.get("qyyd_verify_123"));
