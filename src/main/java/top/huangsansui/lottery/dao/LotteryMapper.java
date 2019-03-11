@@ -1,7 +1,8 @@
 package top.huangsansui.lottery.dao;
 
+import org.springframework.stereotype.Repository;
 import top.huangsansui.lottery.model.Lottery;
-
+@Repository
 public interface LotteryMapper {
     int deleteByPrimaryKey(Long lotteryId);
 
