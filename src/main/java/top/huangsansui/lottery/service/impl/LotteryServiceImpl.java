@@ -2,6 +2,8 @@ package top.huangsansui.lottery.service.impl;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +15,10 @@ import top.huangsansui.lottery.dao.LotteryRecordMapper;
 import top.huangsansui.lottery.dao.UserMapper;
 import top.huangsansui.lottery.dto.LotteryDTO;
 import top.huangsansui.lottery.enums.LotteryTypeEnum;
+import top.huangsansui.lottery.factory.SendPrizeProcessor;
+import top.huangsansui.lottery.factory.SendPrizeProcessorFactory;
 import top.huangsansui.lottery.model.Lottery;
+import top.huangsansui.lottery.model.LotteryRecord;
 import top.huangsansui.lottery.model.User;
 import top.huangsansui.lottery.service.LotteryService;
 import top.huangsansui.lottery.util.RedisPoolsUtil;
@@ -23,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -44,6 +50,9 @@ public class LotteryServiceImpl implements LotteryService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private SendPrizeProcessorFactory sendPrizeProcessorFactory;
 
     /**
      * 抽奖，发送奖品并记录
@@ -92,19 +101,57 @@ public class LotteryServiceImpl implements LotteryService {
             log.error("系统错误，请重试");
             return new ResponseEntity(400, null, "系统错误，请重试");
         }
-        // 减少库存，发放奖品并保存记录
-        if (!(reduceStock(lottery) && sendPrize(lottery, user) && saveRecord(lottery, userId))) {
-
+        Future task = null;
+        try {
+            // 减少库存
+            reduceStock(lottery);
+            // 异步发送奖品
+            task = sendPrize(lottery, user);
+            // 保存发送记录
+            saveRecord(lottery, userId);
+            if (!(boolean)task.get()){
+                return new ResponseEntity(400, null, "发送礼品异常");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity(400, null, "系统错误");
         }
         return new ResponseEntity(200, lottery, null);
     }
 
-    private boolean saveRecord(Lottery lottery, long userId) {
-        return true;
+    /**
+     * 保存领取记录
+     * @param lottery
+     * @param userId
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void saveRecord(Lottery lottery, long userId) {
+        LotteryRecord record = new LotteryRecord();
+        record.setLotteryId(lottery.getLotteryId());
+        record.setLotteryName(lottery.getLotteryName());
+        record.setPoints(lottery.getPoints());
+        record.setType(lottery.getType());
+        record.setUserId(userId);
+        lotteryRecordMapper.insertSelective(record);
     }
 
-    private boolean sendPrize(Lottery lottery, User user) {
-        return true;
+    /**
+     * 发送奖品
+     * @param lottery
+     * @param user
+     * @return
+     */
+    @Async("myAsync")
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public Future<Boolean> sendPrize(Lottery lottery, User user) {
+        SendPrizeProcessor processor = sendPrizeProcessorFactory
+                                        .getPrizeProcessor(LotteryTypeEnum.getLotteryTypeEmumByType(lottery.getType()));
+        if (processor == null) {
+            return new AsyncResult<>(Boolean.FALSE);
+        }
+        processor.send(user, lottery);
+        return new AsyncResult<>(Boolean.TRUE);
     }
 
     /**
@@ -112,9 +159,11 @@ public class LotteryServiceImpl implements LotteryService {
      * @param lottery
      * @return
      */
-    private boolean reduceStock(Lottery lottery) {
-        // TODO: 2019/3/12
-        return true;
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void reduceStock(Lottery lottery) {
+        if (lotteryMapper.decStockNumByLotteryId(lottery.getLotteryId()) <= 0){
+            throw new IllegalStateException("减少库存失败");
+        }
     }
 
     private Lottery getLottery(List<LotteryDTO> filtered) {

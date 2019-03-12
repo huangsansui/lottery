@@ -139,4 +139,7 @@
     select lottery_id, lottery_name, `type`, points, stock_num
     from lottery where is_delete = 0 and lottery_id = #{lotteryId} for update
   </select>
+  <update id="decStockNumByLotteryId" resultType="int">
+     update lottery set stock_num = stock_num - 1 where lottery_id = #{lotteryId} and stock_num > 0
+  </update>
 </mapper>

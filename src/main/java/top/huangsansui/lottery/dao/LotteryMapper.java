@@ -24,4 +24,6 @@ public interface LotteryMapper {
     List<LotteryDTO> findList();
 
     Lottery findByLotteryId(@Param("lotteryId")Long lotteryId);
+
+    int decStockNumByLotteryId(@Param("lotteryId")Long lotteryId);
 }

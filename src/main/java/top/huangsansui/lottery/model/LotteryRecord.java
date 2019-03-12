@@ -11,7 +11,7 @@ public class LotteryRecord {
 
     private String lotteryName;
 
-    private Byte type;
+    private Integer type;
 
     private Integer points;
 
@@ -53,11 +53,11 @@ public class LotteryRecord {
         this.lotteryName = lotteryName == null ? null : lotteryName.trim();
     }
 
-    public Byte getType() {
+    public Integer getType() {
         return type;
     }
 
-    public void setType(Byte type) {
+    public void setType(Integer type) {
         this.type = type;
     }
 

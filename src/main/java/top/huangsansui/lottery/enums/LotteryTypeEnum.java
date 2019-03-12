@@ -9,19 +9,31 @@ package top.huangsansui.lottery.enums;
  */
 public enum LotteryTypeEnum {
 
-    THANKS(0, "谢谢参与"),
+    THANKS(0, "谢谢参与", "sendThanksProcessor"),
 
-    POINTS(1, "积分"),
+    POINTS(1, "积分", "sendPointsProcessor"),
 
-    MONEY(2, "红包");
+    MONEY(2, "红包", "sendMoneyProcessor");
 
     private int type;
 
     private String msg;
 
-    LotteryTypeEnum(int type, String msg) {
+    private String beanName;
+
+    public static LotteryTypeEnum getLotteryTypeEmumByType(int type) {
+        for (LotteryTypeEnum lotteryTypeEnum : LotteryTypeEnum.values()) {
+            if (lotteryTypeEnum.getType() == type) {
+                return lotteryTypeEnum;
+            }
+        }
+        return null;
+    }
+
+    LotteryTypeEnum(int type, String msg, String beanName) {
         this.type = type;
         this.msg = msg;
+        this.beanName = beanName;
     }
 
     public int getType() {
@@ -38,5 +50,13 @@ public enum LotteryTypeEnum {
 
     public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    public String getBeanName() {
+        return beanName;
+    }
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
     }
 }
